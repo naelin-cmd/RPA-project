@@ -62,12 +62,59 @@ namespace RPAWindowsApp
         public List<RpaBot> BotListMethod()
         {
             List<RpaBot> botList = new List<RpaBot>();
-
-
+            var Id = Properties.Settings.Default.UserId;
             connect.Open();
-            SqlCommand cmd = new SqlCommand("SELECT PlatformBotTable.BotId, BotsTable.PlatformName, BotsTable.BotPlatformId, BotsTable.BotDescription, BotsTable.BotName FROM PlatformBotTable FULL OUTER JOIN BotsTable ON PlatformBotTable.BotId = BotsTable.BotId; "
-                , connect);
-            
+            SqlCommand platform = new SqlCommand($"SELECT * from UserPlatformTable where UserId = {Id}; ", connect);
+            SqlDataReader reader1 = platform.ExecuteReader();
+            while (reader1.Read())
+            {
+
+               
+                if(reader1 != null)
+                {
+                    try
+                    {
+                        var platformid = reader1["PlatformId"];
+                        int platid = (int)platformid;
+                        Properties.Settings.Default.platformid = platid;
+                    }
+               catch(Exception ex)
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No bots");
+                }
+                
+            }
+            reader1.Close();
+            int id = Properties.Settings.Default.platformid;
+            SqlCommand bot = new SqlCommand($"SELECT * from PlatformBotTable where PlatformId = {id}; ", connect);
+
+            SqlDataReader reader2 = bot.ExecuteReader();
+            while (reader2.Read())
+            {
+                try
+                {
+                    var botid = reader2["BotId"];
+                    int botsid = (int)botid;
+                    Properties.Settings.Default.botId = botsid;
+                }
+                    
+               catch(Exception ex)
+                    {
+                        return null;
+                    }
+              
+            }
+            int id1 = Properties.Settings.Default.botId;
+
+          
+            SqlCommand cmd = new SqlCommand($"SELECT * from BotsTable where BotId ={id1}; ", connect);
+            reader2.Close();
+
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
@@ -80,9 +127,10 @@ namespace RPAWindowsApp
                     rpaBot.BotName = (string)reader["BotName"];
                     rpaBot.BotDescription = (string)reader["BotDescription"];
                     botList.Add(rpaBot);
-
                    
+
                 }
+                reader.Close();
                 return botList;
                 
             }
@@ -208,15 +256,18 @@ namespace RPAWindowsApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
-            
-            SqlCommand cmd = new SqlCommand("select * from UserTable", connect);
+
+            var id = Properties.Settings.Default.UserId;
+
+            SqlCommand cmd = new SqlCommand($"select * from UserTable where UserId ={id} ", connect);
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
+                string username = reader["FirstName"].ToString();
+                Properties.Settings.Default.username = username;
                
-                var username=Properties.Settings.Default.username;
                 label2.Text = "Welcome: " +username.ToString();
+
                
             }
             connect.Close();

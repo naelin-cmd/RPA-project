@@ -73,7 +73,7 @@ namespace RPAWindowsApp
             {
                 if (textBox3.Text == textBox4.Text)
                 {
-                    SqlCommand cmd = new SqlCommand("select * from credentialtable where fullname='" + textBox1.Text + "'", connect);
+                    SqlCommand cmd = new SqlCommand("select * from UserTable where FirstName='" + textBox1.Text + "'", connect);
                     SqlDataReader dr = cmd.ExecuteReader();
                     if (dr.Read())
                     {
@@ -85,7 +85,7 @@ namespace RPAWindowsApp
                     {
                         dr.Close();
 
-                         cmd = new SqlCommand($"insert into credentialtable(fullname, email, password)values( '" +textBox1.Text+"','"+textBox2.Text+"','"+textBox3.Text+"')", connect);
+                         cmd = new SqlCommand($"insert into credentialtable(FirstName, Email, Password)values( '" +textBox1.Text+"','"+textBox2.Text+"','"+textBox3.Text+"')", connect);
                         
                         cmd.ExecuteNonQuery();
                         

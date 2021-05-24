@@ -14,12 +14,14 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using System.Net;
+using System.IO;
 
 namespace RPAWindowsApp
 {
     public partial class Form3 : Form
     {
-        private readonly HttpClient httpClient = new HttpClient();
+        private HttpClient httpClient = new HttpClient();
 
         public static string constring = ConfigurationManager.ConnectionStrings["RPAWindowsApp.Properties.Settings.Connection"].ConnectionString;
         SqlConnection connect = new SqlConnection(constring);
@@ -38,41 +40,48 @@ namespace RPAWindowsApp
        
         public async Task LoginAsync(LoginModel loginModel)
         {
-           
+
 
 
             try
             {
-                var url = "https://localhost:44391/api/Users/Login";
 
+                var request = new HttpRequestMessage();
+                request.RequestUri = new Uri("https://localhost:44391/api/Users/Login");
+                request.Method = HttpMethod.Post;
+                request.Headers.Add("Accept", "application/json");
                 var json = JsonConvert.SerializeObject(loginModel);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                var result = await httpClient.PostAsync(url, content);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json"); ;
+                httpClient = new HttpClient();
+                var response = await httpClient.SendAsync(request);
+                HttpContent content = response.Content;
+                var jsonString = await content.ReadAsStringAsync();
                
-                var jsonString = await result.Content.ReadAsStringAsync();
-                //var deserialize= JsonConvert.DeserializeObject<>(jsonString);
-                LoginModel model = new LoginModel()
-                {
-                    Id = jsonString["id"],
-                    Token = jsonString["token"]
+               
 
-                };
-
-                if (jsonString != null)
+                var deserialize = JsonConvert.DeserializeObject<Root>(jsonString);
+                if (deserialize.isSuccess )
                 {
-                  
+                    
+                    Properties.Settings.Default.AuthToken = deserialize.data.token;
+                    Properties.Settings.Default.UserId = deserialize.data.id;
+                    Form1 form1 = new Form1();
+                    form1.ShowDialog();
 
 
 
                 }
+                else
+                {
+                    MessageBox.Show(" Incorrect Credentials", "Error!!!" );
+                }
 
-
-            }
-            catch(Exception ex)
+                   
+                }
+            catch (Exception ex)
             {
                 throw ex;
-               
+
             }
             
            
@@ -81,46 +90,19 @@ namespace RPAWindowsApp
 
         private async void button1_Click(object sender, EventArgs e)
         {
+            try
+            {
+                login.Email = textBox2.Text;
+                login.Password = textBox3.Text;
+                await LoginAsync(login);
+            }
+            catch (Exception ex)
+            {
 
-
-
-            login.Email = textBox2.Text;
-            login.Password = textBox3.Text;
-            await LoginAsync(login);
-            //if (login != null)
-            //{
-              
-                //connect = new SqlConnection(constring);
-                //connect.Open();
-                //if (textBox3.Text != string.Empty || textBox2.Text != string.Empty)
-                //{
-                //    SqlCommand cmd = new SqlCommand("select * from UserTable where email='" + textBox2.Text + "' and password='" + textBox3.Text + "'", connect);
-                //    SqlDataReader dr = cmd.ExecuteReader();
-
-                //    if (dr.Read())
-                //    {
-                //        string username = dr["FirstName"].ToString();
-                //        Properties.Settings.Default.username = username;
-
-                //        dr.Close();
-                //        this.Hide();
-                //        Form1 home = new Form1();
-                //        home.ShowDialog();
-
-                //    }
-                //    else
-                //    {
-                //        dr.Close();
-                //        MessageBox.Show("No Account avilable with this email and password ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //    }
-                //}
-                //else
-                //{
-                //    MessageBox.Show("Please enter value in all field.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //}
-
-
-            //}
+               MessageBox.Show($"{ex.Message}");
+            }
+            
+            
         }
 
 

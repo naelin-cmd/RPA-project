@@ -50,7 +50,13 @@
       <Value Profile="(Default)">Data Source=LAPTOP-Q84TE5T7\NAELINSQL;Initial Catalog=RPAdatabase;Integrated Security=True</Value>
     </Setting>
     <Setting Name="UserId" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="botId" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="platformid" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

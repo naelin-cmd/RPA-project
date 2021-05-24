@@ -192,13 +192,34 @@ namespace RPAWindowsApp.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public int UserId {
             get {
                 return ((int)(this["UserId"]));
             }
             set {
                 this["UserId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public int botId {
+            get {
+                return ((int)(this["botId"]));
+            }
+            set {
+                this["botId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public int platformid {
+            get {
+                return ((int)(this["platformid"]));
+            }
+            set {
+                this["platformid"] = value;
             }
         }
     }
